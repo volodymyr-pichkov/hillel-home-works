@@ -1,0 +1,288 @@
+1) Асинхронный код в JavaScript: главное
+Асинхронный код позволяет выполнять задачи параллельно с основным потоком, не блокируя его, что повышает эффективность и отзывчивость программы. Примеры — запросы к серверу, чтение файлов или работа с базами данных.
+
+Параллельная модель, цикл событий и их работа
+JavaScript работает на однопоточной основе, используя цикл событий (Event Loop) для асинхронного выполнения:
+
+Call Stack (Стек вызовов) — обрабатывает активные функции.
+Web API / Node.js API — выполняет асинхронные задачи.
+Callback Queue (Очередь обратных вызовов) — хранит завершённые задачи для выполнения.
+Event Loop (Цикл событий) — перемещает задачи из очереди в стек, когда он пуст.
+Heap (Куча) обеспечивает динамическое хранение объектов, а Queue (Очередь) гарантирует порядок выполнения задач (FIFO).
+
+Эта модель позволяет эффективно выполнять асинхронные операции, сохраняя высокий уровень отзывчивости приложений.
+
+2) Callback
+Callback — это функция, передаваемая как аргумент другой функции, которая вызывается после завершения асинхронной операции. Пример:
+
+javascript
+Копировать код
+function waitAndRun(ms, callback) {
+  console.log('Таймер запущен');
+  setTimeout(() => {
+    console.log('Таймер завершён');
+    callback();
+  }, ms);
+}
+
+waitAndRun(2000, () => {
+  console.log('Callback выполнен');
+});
+Callback hell — это чрезмерная вложенность callback-функций, из-за чего код становится трудным для чтения и поддержки:
+
+javascript
+Копировать код
+setTimeout(() => {
+  console.log('Первый таймер завершён');
+  setTimeout(() => {
+    console.log('Второй таймер завершён');
+    setTimeout(() => {
+      console.log('Третий таймер завершён');
+    }, 1000);
+  }, 1000);
+}, 1000);
+Promise
+Promise — это объект, представляющий завершение или неудачу асинхронной операции. Он имеет три состояния: pending (ожидание), fulfilled (успешно выполнен) или rejected (отклонён). Обработчики добавляются через .then(), .catch() и .finally().
+
+Пример:
+
+javascript
+Копировать код
+const loadData = new Promise((resolve, reject) => {
+  console.log('Загрузка начата');
+  setTimeout(() => resolve('Данные загружены'), 2000);
+});
+
+loadData
+  .then((message) => console.log(message)) // "Данные загружены"
+  .catch((error) => console.error(error)) // В случае ошибки
+  .finally(() => console.log('Операция завершена'));
+Promise hell возникает при чрезмерной вложенности промисов:
+
+javascript
+Копировать код
+new Promise((resolve) => setTimeout(() => resolve(1), 1000))
+  .then((result) => {
+    console.log(result); // 1
+    return new Promise((resolve) =>
+      setTimeout(() => resolve(result + 1), 1000)
+    );
+  })
+  .then((result) => {
+    console.log(result); // 2
+    return new Promise((resolve) =>
+      setTimeout(() => resolve(result + 1), 1000)
+    );
+  })
+  .then((result) => console.log(result)); // 3
+Использование цепочек Promise или async/await помогает упростить структуру и избежать вложенности.
+
+3) Async/Await
+Async/await позволяет писать асинхронный код, как синхронный.
+
+async делает функцию асинхронной, возвращающей Promise.
+await приостанавливает выполнение функции до завершения Promise.
+Пример:
+
+javascript
+Копировать код
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function run() {
+  console.log('Начало');
+  await delay(2000);
+  console.log('Конец');
+}
+
+run();
+Асинхронный код становится проще и читаемее.
+
+JSON
+JSON (JavaScript Object Notation) — текстовый формат обмена данными.
+
+JSON.parse(): конвертирует JSON в объект.
+JSON.stringify(): преобразует объект в JSON.
+Пример:
+
+javascript
+Копировать код
+const jsonString = '{"name":"John", "age":30}';
+const jsObject = JSON.parse(jsonString);
+console.log(jsObject.name); // "John"
+
+const newJson = JSON.stringify(jsObject);
+console.log(newJson); // '{"name":"John","age":30}'
+XHR (XMLHttpRequest)
+XHR — API для выполнения HTTP-запросов без перезагрузки страницы.
+
+Пример GET-запроса:
+
+javascript
+Копировать код
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://jsonplaceholder.typicode.com/posts/1', true);
+
+xhr.onload = () => {
+  if (xhr.status === 200) console.log(xhr.responseText);
+  else console.error('Ошибка:', xhr.status);
+};
+
+xhr.onerror = () => console.error('Ошибка сети');
+xhr.send();
+Позволяет работать с сервером асинхронно.
+
+4) Fetch
+Fetch — это современный интерфейс для выполнения HTTP-запросов, использующий промисы (Promises), что упрощает работу с асинхронным кодом по сравнению с XMLHttpRequest (XHR).
+
+Пример:
+
+javascript
+Копировать код
+fetch('https://jsonplaceholder.typicode.com/posts/1')
+  .then(response => {
+    if (!response.ok) throw new Error('Ошибка: ' + response.statusText);
+    return response.json();
+  })
+  .then(data => console.log(data))
+  .catch(error => console.error('Ошибка:', error));
+fetch() выполняет запрос и возвращает объект Promise.
+Проверка статуса ответа через response.ok.
+Метод .json() парсит тело ответа в формат JSON.
+Обработка ошибок в .catch().
+AJAX
+AJAX (Asynchronous JavaScript and XML) — техника асинхронного обмена данными с сервером без перезагрузки страницы. Использует XHR или Fetch API для взаимодействия с сервером и динамического обновления DOM.
+
+5) HTTP-методы
+
+Основные методы:
+
+GET: получение данных с сервера.
+POST: создание нового ресурса.
+PUT: обновление существующего ресурса.
+PATCH: частичное обновление ресурса.
+DELETE: удаление ресурса.
+OPTIONS: запрос доступных действий для ресурса.
+HEAD: получение метаданных без содержимого.
+Примеры использования Fetch API:
+
+GET
+javascript
+Копировать код
+fetch('https://jsonplaceholder.typicode.com/posts/1')
+  .then(response => response.json())
+  .then(data => console.log(data));
+POST
+javascript
+Копировать код
+fetch('https://jsonplaceholder.typicode.com/posts', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ title: 'foo', body: 'bar', userId: 1 }),
+})
+  .then(response => response.json())
+  .then(data => console.log(data));
+PUT
+javascript
+Копировать код
+fetch('https://jsonplaceholder.typicode.com/posts/1', {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ id: 1, title: 'foo', body: 'bar', userId: 1 }),
+})
+  .then(response => response.json())
+  .then(data => console.log(data));
+PATCH
+javascript
+Копировать код
+fetch('https://jsonplaceholder.typicode.com/posts/1', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ title: 'foo' }),
+})
+  .then(response => response.json())
+  .then(data => console.log(data));
+DELETE
+javascript
+Копировать код
+fetch('https://jsonplaceholder.typicode.com/posts/1', { method: 'DELETE' })
+  .then(() => console.log('Ресурс удалён'));
+Примечание: для методов GET и DELETE тело запроса не используется. Для остальных методов задаются заголовки и тело запроса.
+
+6) CRUD
+CRUD (Create, Read, Update, Delete) — это четыре основные операции для работы с данными в базах данных или хранилищах. Они соответствуют HTTP-методам:
+
+Create — POST (создание нового ресурса).
+Read — GET (получение данных).
+Update — PUT или PATCH (обновление ресурса полностью или частично).
+Delete — DELETE (удаление ресурса).
+CRUD является основой для RESTful API, обеспечивая взаимодействие клиента с сервером.
+Коды состояния HTTP
+
+1xx (Информационные): Запрос обрабатывается (например, 100 Continue).
+2xx (Успешные): Успешное выполнение запроса (200 OK, 201 Created).
+3xx (Перенаправление): Ресурс перемещён (301 Moved Permanently, 304 Not Modified).
+4xx (Ошибки клиента): Проблемы в запросе (400 Bad Request, 404 Not Found).
+5xx (Ошибки сервера): Сбой на сервере (500 Internal Server Error, 503 Service Unavailable).
+
+7) Spread-оператор (...)
+Spread-оператор позволяет расширять элементы итерируемых объектов (массивов) или свойства объектов в местах, где ожидаются несколько аргументов или элементов.
+
+С массивами: позволяет объединять массивы без использования concat().
+
+javascript
+Копировать код
+const combinedArray = [...firstArray, ...secondArray];
+С объектами: позволяет копировать или объединять свойства объектов.
+
+javascript
+Копировать код
+const combinedObject = { ...firstObject, ...secondObject };
+С функциями: позволяет передавать элементы массива как отдельные аргументы.
+
+javascript
+Копировать код
+console.log(sum(...numbers));
+Spread-оператор упрощает работу с массивами и объектами, позволяя легко их объединять и передавать данные.
+
+8) Rest-оператор (...)
+Rest-оператор в JavaScript позволяет собирать несколько аргументов в один массив, упрощая работу с ними.
+
+С массивами: позволяет извлекать часть элементов массива в новый массив.
+
+javascript
+Копировать код
+const [first, second, ...rest] = numbers;
+С объектами: можно создать новый объект, исключая определенные свойства.
+
+javascript
+Копировать код
+const { name, ...rest } = person;
+С функциями: позволяет принимать неограниченное количество аргументов.
+
+javascript
+Копировать код
+function sum(...numbers) { return numbers.reduce((acc, current) => acc + current, 0); }
+Rest-оператор упрощает работу с данными, позволяя легко извлекать подмножества массивов и объектов, а также собирать параметры функций.
+
+9) Деструктуризация позволяет легко присваивать элементы массивов и свойства объектов переменным.
+
+Деструктуризация массива: Присваивание элементов массива переменным.
+
+javascript
+Копировать код
+const [red, green, blue] = ['красный', 'зелёный', 'синий'];
+Деструктуризация объекта: Присваивание свойств объекта переменным с соответствующими именами.
+
+javascript
+Копировать код
+const { name, age } = { name: 'Alex', age: 22 };
+Деструктуризация параметров функции: Извлечение свойств объекта прямо в параметрах функции.
+
+javascript
+Копировать код
+function displayStudentInfo({ name, age }) {
+  console.log(`Name: ${name}, Age: ${age}`);
+}
+Деструктуризация упрощает доступ к элементам и свойствам, делая код более компактным и понятным.
