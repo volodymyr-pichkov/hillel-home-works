@@ -13,8 +13,7 @@ async function patchData(id, data) {
     });
 
     if (!response.ok) {
-      console.error(`HTTP Error: ${response.status}`);
-      return `Error: HTTP status ${response.status}`;
+      throw new Error(`HTTP Error: ${response.status}`);
     }
 
     const result = await response.json(); // конвертация в json
@@ -22,8 +21,7 @@ async function patchData(id, data) {
     console.log("Updated Data:", result); // возврат данных
     return result;
   } catch (error) {
-    console.error("Request failed:", error); // обработчик ошибки выполнения запроса
-    return `Error: ${error.message}`;
+    throw new Error(`Request failed: ${error.message}`); // обработчик ошибки выполнения запроса
   }
 }
 

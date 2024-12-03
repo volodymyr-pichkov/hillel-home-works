@@ -7,8 +7,7 @@ async function getData(segment) {
     const response = await fetch(url); // запрос
 
     if (!response.ok) {
-      console.error(`HTTP Error: ${response.status}`); // если статус ответа не в диапазоне 200-299
-      return response.status;
+      throw new Error(`HTTP Error: ${response.status}`); // если статус ответа не в диапазоне 200-299
     }
 
     const data = await response.json(); // конвертация в json
@@ -16,8 +15,7 @@ async function getData(segment) {
     console.log("Received Data:", data); // возврат данных
     return data;
   } catch (error) {
-    console.error("Request failed:", error); // обработчик сетевых ошибок
-    return `Error: ${error.message}`;
+    throw new Error(`Request failed: ${error.message}`); // обработчик сетевых ошибок
   }
 }
 

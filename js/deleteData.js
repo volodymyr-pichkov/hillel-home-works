@@ -12,14 +12,12 @@ async function deleteData(id) {
       console.log(`Post with id ${id} has been successfully deleted.`); // проверка статуса ответа
       return true;
     } else {
-      console.error(
+      throw new Error(
         `Failed to delete post with id ${id}. Status: ${response.status}`
       );
-      return response.status;
     }
   } catch (error) {
-    console.error(`Error during deletion: ${error.message}`); // обработчик ошибки выполнения запроса
-    return `Error: ${error.message}`;
+    throw new Error(`Request failed: ${error.message}`); // обработчик ошибки выполнения запроса
   }
 }
 
