@@ -6,7 +6,7 @@ searchInput.addEventListener("input", async () => {
   const query = searchInput.value.trim();
 
   if (query.length === 0) {
-    resultsContainer.innerHTML = ""; // если пользователь удаляет весь текст, контейнер с результатами очищается
+    resultsContainer.textContent = ""; // очищаем контейнер при удалении текста
     return;
   }
 
@@ -19,16 +19,16 @@ searchInput.addEventListener("input", async () => {
     if (data.Response === "True") { // успешный ответ от API
       displayResults(data.Search); // массив фильмов, найденных по запросу
     } else {
-      resultsContainer.innerHTML = `<p>${data.Error}</p>`; // если API возвращает ошибку (например, "Movie not found!"), сообщение отображается в контейнере
+      resultsContainer.textContent = data.Error; // сообщение об ошибке без HTML
     }
   } catch (error) {
-    resultsContainer.innerHTML =
-      "<p>Ошибка при получении данных. Попробуйте позже.</p>"; // если запрос не удаётся (например, из-за отсутствия интернета или проблем с сервером), выводится сообщение об ошибке
+    resultsContainer.textContent = "Ошибка при получении данных. Попробуйте позже."; // сообщение об ошибке без HTML
     console.error("Ошибка запроса:", error);
   }
 });
 
 function displayResults(movies) {
+  // Для вывода списка фильмов сохраняем использование innerHTML, т.к. необходима разметка
   resultsContainer.innerHTML = movies
     .map( // проходит по каждому фильму и создаёт HTML-код для его отображения
       (movie) => `
