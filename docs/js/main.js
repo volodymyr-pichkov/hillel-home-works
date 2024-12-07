@@ -28,7 +28,6 @@ searchInput.addEventListener("input", async () => {
 });
 
 function displayResults(movies) {
-  // Для вывода списка фильмов сохраняем использование innerHTML, т.к. необходима разметка
   resultsContainer.innerHTML = movies
     .map( // проходит по каждому фильму и создаёт HTML-код для его отображения
       (movie) => `
