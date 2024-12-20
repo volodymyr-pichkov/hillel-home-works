@@ -3,50 +3,65 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
 
   return {
-    entry: './src/index.js',
+    entry: './src/index.ts', // Входной файл для TypeScript
     output: {
-      filename: isProduction ? '[name].[contenthash].js' : '[name].js',
+      filename: isProduction ? 'js/[name].[contenthash].js' : 'js/[name].js',
       path: path.resolve(__dirname, 'dist'),
-      assetModuleFilename: 'assets/[hash][ext][query]',
+      assetModuleFilename: 'assets/[hash][ext][query]'
     },
-    mode: isProduction ? 'production' : 'development',
+    devtool: isProduction ? 'source-map' : 'eval-source-map',
+    devServer: {
+      static: path.join(__dirname, 'dist'),
+      port: 3000,
+      hot: true,
+      open: true
+    },
+    resolve: {
+      extensions: ['.tsx', '.ts', '.js']
+    },
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/
+        },
+        {
+          test: /\.jsx?$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
-          },
+            options: {
+              presets: ['@babel/preset-env']
+            }
+          }
         },
         {
-          test: /\.css$/,
+          test: /\.(scss|sass|less|css)$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
             'css-loader',
-          ],
+            'sass-loader',
+            'less-loader'
+          ]
         },
         {
-          test: /\.(png|jpe?g|gif|svg)$/,
-          type: 'asset/resource',
+          test: /\.(png|jpe?g|gif|svg|webp)$/i,
+          type: 'asset',
         },
         {
-          test: /\.(woff|woff2|eot|ttf|otf)$/,
+          test: /\.(woff(2)?|eot|ttf|otf)$/i,
           type: 'asset/resource',
-          generator: {
-            filename: 'fonts/[name].[hash][ext]',
-          },
-        },
-      ],
-    },
-    optimization: {
-      minimize: isProduction,
-      minimizer: [new TerserPlugin()],
+        }
+      ]
     },
     plugins: [
       new CleanWebpackPlugin(),
@@ -54,15 +69,22 @@ module.exports = (env, argv) => {
         template: './src/index.html',
       }),
       new MiniCssExtractPlugin({
-        filename: isProduction ? '[name].[contenthash].css' : '[name].css',
+        filename: isProduction ? 'css/[name].[contenthash].css' : 'css/[name].css',
       }),
-    ],
-    devServer: {
-      static: {
-        directory: path.join(__dirname, 'dist'),
+      new ESLintPlugin({
+        extensions: ['js', 'ts']
+      }),
+      isProduction && new BundleAnalyzerPlugin()
+    ].filter(Boolean),
+    optimization: {
+      minimize: isProduction,
+      minimizer: [
+        new TerserPlugin(),
+        new CssMinimizerPlugin(),
+      ],
+      splitChunks: {
+        chunks: 'all',
       },
-      compress: true,
-      port: 9000,
-    },
+    }
   };
 };
