@@ -27,26 +27,24 @@ exports.getOrderStatus = getOrderStatus;
 // 2) Объявил функцию, использовал switch-case
 var OrderStatus;
 (function (OrderStatus) {
-  OrderStatus["Pending"] = "Pending";
-  OrderStatus["Shipped"] = "Shipped";
-  OrderStatus["Delivered"] = "Delivered";
-  OrderStatus["Cancelled"] = "Cancelled";
+    OrderStatus["Pending"] = "Pending";
+    OrderStatus["Shipped"] = "Shipped";
+    OrderStatus["Delivered"] = "Delivered";
+    OrderStatus["Cancelled"] = "Cancelled";
 })(OrderStatus || (exports.OrderStatus = OrderStatus = {}));
 function getOrderStatus(status) {
-  switch (
-    status // switch юзаю когда много вариантов выбора
-  ) {
-    case OrderStatus.Pending:
-      return "Заказ ожидает обработки";
-    case OrderStatus.Shipped:
-      return "Заказ был отправлен";
-    case OrderStatus.Delivered:
-      return "Заказ доставлен";
-    case OrderStatus.Cancelled:
-      return "Заказ отменен";
-    default: // Если значение status не совпадает ни с одним из перечисленных случаев
-      throw new Error("Неизвестный статус заказа"); //  выброска ошибки
-  }
+    switch (status) { // switch юзаю когда много вариантов выбора
+        case OrderStatus.Pending:
+            return 'Заказ ожидает обработки';
+        case OrderStatus.Shipped:
+            return 'Заказ был отправлен';
+        case OrderStatus.Delivered:
+            return 'Заказ доставлен';
+        case OrderStatus.Cancelled:
+            return 'Заказ отменен';
+        default: // Если значение status не совпадает ни с одним из перечисленных случаев
+            throw new Error('Неизвестный статус заказа'); //  выброска ошибки
+    }
 }
 console.log(getOrderStatus(OrderStatus.Pending));
 console.log(getOrderStatus(OrderStatus.Shipped));

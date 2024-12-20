@@ -17,11 +17,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = createUser;
 function createUser(name, age, isActive = true) {
-  return {
-    name,
-    age,
-    isActive,
-  };
+    return {
+        name,
+        age,
+        isActive
+    };
 }
-const newUser = createUser("Анна", 25, true); // Вывод на нового пользователя
+const newUser = createUser('Анна', 25, true); // Вывод на нового пользователя
 console.log(newUser);

@@ -16,7 +16,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sumArray = sumArray;
 function sumArray(numbers) {
-  return numbers.reduce((acc, curr) => acc + curr, 0); // использовал метод reduce
+    return numbers.reduce((acc, curr) => acc + curr, 0); // использовал метод reduce
 }
 console.log(sumArray([1, 2, 3, 4])); // Должно вывести 10
 console.log(sumArray([])); // Должно вывести 0
