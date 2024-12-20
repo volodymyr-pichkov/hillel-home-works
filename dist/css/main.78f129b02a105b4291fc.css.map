@@ -1,1 +1,0 @@
-{"version":3,"file":"css/main.78f129b02a105b4291fc.css","mappings":"AAAA,KAEE,yBACA,WAFA,6BAGA,SACA","sources":["webpack://hw/./src/styles.scss"],"sourcesContent":["body {\n  font-family: Arial, sans-serif;\n  background-color: #f5f5f5;\n  color: #333;\n  margin: 0;\n  padding: 0;\n}\n"],"names":[],"sourceRoot":""}
