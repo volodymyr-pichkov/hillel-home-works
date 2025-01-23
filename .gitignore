@@ -22,4 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-*.txt
+
+# React Router
+/.react-router/
+/build/
